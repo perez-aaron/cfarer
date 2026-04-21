@@ -8,9 +8,9 @@
   <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex="-1"></canvas>
   <script>
     var Module = {
-      canvas: (function() { return document.getElementById('canvas'); })()
+      canvas: (function() { return document.getElementById('canvas'); })(),
+      love: "game.love"  
     };
-    Module.love = "game.love";   // tells love.js to load your game
   </script>
   <script src="love.js"></script>
 </body>
