@@ -9,9 +9,37 @@
   <script>
     var Module = {
       canvas: (function() { return document.getElementById('canvas'); })(),
-      love: "game.love"  
+      printErr: console.error.bind(console),
+      preRun: [function() {
+        try {
+          var xhr = new XMLHttpRequest();
+          xhr.open('GET', 'game.love', false); 
+          xhr.responseType = 'arraybuffer';
+          xhr.send(null);
+          if (xhr.status === 200 || (xhr.status === 0 && xhr.response)) {
+            var arr = new Uint8Array(xhr.response || xhr.responseText.length);
+            if (xhr.response) arr = new Uint8Array(xhr.response);
+            Module['FS_createDataFile']('/', 'game.love', arr, true, true, true);
+            console.log('game.love loaded into FS');
+          } else {
+            console.error('Failed to fetch game.love, status:', xhr.status);
+          }
+        } catch (e) {
+          console.error('Error preloading game.love:', e);
+        }
+      }]
     };
+
+    function applicationLoad() {
+      if (typeof Love === 'function') {
+        Love(Module);
+      } else if (typeof Module['onRuntimeInitialized'] === 'function') {
+        Module['onRuntimeInitialized'](function() { Love(Module); });
+      } else {
+        console.error('Love loader not found');
+      }
+    }
   </script>
-  <script src="love.js"></script>
+  <script src="love.js" onload="applicationLoad()"></script>
 </body>
 </html>
